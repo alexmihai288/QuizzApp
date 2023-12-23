@@ -62,10 +62,10 @@ const ProjectSkel = function ProjectSkeleton() {
   );
 };
 
-// export async function generateStaticParams() {
-//   const quizzes = await getAllQuizzesId();
+export async function generateStaticParams() {
+  const quizzes = await getAllQuizzesId();
 
-//   return quizzes?.map((quizz: { id: string }) => ({
-//     id: quizz.id,
-//   }));
-// }
+  return quizzes?.map((quizz: { id: string }) => ({
+    id: quizz.id,
+  }));
+}

@@ -1,6 +1,6 @@
 export async function getAllQuizzesId() {
   const quizzes = await fetch(
-    "https://quizapp-alexmihai288.vercel.app/api/getProjectsIds",
+    "https://quizz-app-alexmihai288.vercel.app/api/getProjectsIds",
     {
       method: "GET",
     }

@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id            String             @id @default(cuid())
+  username      String             @unique
+  email         String             @unique
+  password      String?
+  image         String?
+  projects      Project[]
+  projectsTaken FinishedProjects[]
+}
+
+enum ProjectStatus {
+  Taken
+}
+
+model FinishedProjects {
+  id        String        @id @default(cuid())
+  projectId String
+  User      User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  status    ProjectStatus
+
+  @@index([userId])
+}
+
+model Project {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  title     String
+  topic     String
+  questions Question[]
+  createdAt DateTime   @default(now())
+
+  chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String
+
+  @@index([userId])
+  @@index([chatId])
+}
+
+model Chat {
+  id String @id @default(cuid())
+
+  messages Message[]
+  projects Project[]
+}
+
+model Message {
+  id String @id @default(cuid())
+
+  isAi   Boolean
+  text   String
+  Chat   Chat   @relation(fields: [chatId], references: [id])
+  chatId String
+
+  @@index([chatId])
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  questionText String
+  answers      Answer[]
+  Project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+
+  @@index([projectId])
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  answerText String
+  isCorrect  Boolean
+  Question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+
+  @@index([questionId])
+}

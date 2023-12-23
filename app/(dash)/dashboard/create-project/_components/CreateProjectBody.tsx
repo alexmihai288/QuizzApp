@@ -3,7 +3,7 @@ import { InputWrapper } from "@/app/(auth)/_components/InputWrapper";
 import { Button } from "@/components/ui/button";
 import { CreateQuestion } from "@/types";
 import { Check } from "lucide-react";
-import { FC, useState } from "react";
+import { FC } from "react";
 
 interface CreateProjectBodyProps {
   questionsToBeCreated: CreateQuestion[];
@@ -11,14 +11,20 @@ interface CreateProjectBodyProps {
     React.SetStateAction<CreateQuestion[]>
   >;
   createProject: (questions: CreateQuestion[]) => Promise<void>;
+  editProject: (questions: CreateQuestion[]) => Promise<void>;
   isPending: boolean;
+  isEditing: boolean;
+  editMode: boolean;
 }
 
 export const CreateProjectBody: FC<CreateProjectBodyProps> = ({
   questionsToBeCreated,
   setQuestionsToBeCreated,
   createProject,
+  editProject,
   isPending,
+  isEditing,
+  editMode,
 }) => {
   const handleAddQuestion = (e: any) => {
     e.preventDefault();
@@ -107,7 +113,10 @@ export const CreateProjectBody: FC<CreateProjectBodyProps> = ({
               <label className="font-bold text-white text-lg">
                 Answers:{" "}
                 <span className="text-muted-foreground text-xs font-normal">
-                  ( {remainingAnswersCount(questionIndex)} answers remaining )
+                  {!editMode &&
+                    `(${remainingAnswersCount(
+                      questionIndex
+                    )} answers remaining)`}
                 </span>
               </label>
               <div className="space-y-2.5">
@@ -118,16 +127,23 @@ export const CreateProjectBody: FC<CreateProjectBodyProps> = ({
                         key={answerIndex}
                         className="flex items-center justify-between"
                       >
-                        <div className="flex flex-col md:flex md:items-center w-full gap-2.5">
-                          <InputWrapper
-                            value={answer.answerText}
-                            key={answerIndex}
-                            type="text"
-                            className="max-w-xl"
-                            onChange={(e) =>
-                              addAnswerText(e, questionIndex, answerIndex)
-                            }
-                          />
+                        <div className="flex flex-col md:flex-row md:items-center w-full gap-2.5">
+                          <div className="flex items-center gap-2.5">
+                            <InputWrapper
+                              value={answer.answerText}
+                              type="text"
+                              className="max-w-xl"
+                              onChange={(e) =>
+                                addAnswerText(e, questionIndex, answerIndex)
+                              }
+                            />
+                            {editMode && answer.isCorrect === true && (
+                              <p className="text-green-500">
+                                This one is correct!
+                              </p>
+                            )}
+                          </div>
+
                           <div className="flex items-center gap-2.5">
                             {shouldShowMarkAsCorrect(questionIndex) && (
                               <Button
@@ -143,29 +159,38 @@ export const CreateProjectBody: FC<CreateProjectBodyProps> = ({
                                 correct
                               </Button>
                             )}
-                            <Button
-                              variant="normalOutline"
-                              onClick={() => handleAddAnswer(questionIndex)}
-                              disabled={
-                                remainingAnswersCount(questionIndex) === 0
-                              }
-                            >
-                              Add new answer
-                            </Button>
+                            {!editMode && (
+                              <Button
+                                variant="normalOutline"
+                                onClick={() => handleAddAnswer(questionIndex)}
+                                disabled={
+                                  remainingAnswersCount(questionIndex) === 0
+                                }
+                              >
+                                Add new answer
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
                     );
                   return (
-                    <InputWrapper
-                      value={answer.answerText}
+                    <div
                       key={answerIndex}
-                      type="text"
-                      className="max-w-xl"
-                      onChange={(e) =>
-                        addAnswerText(e, questionIndex, answerIndex)
-                      }
-                    />
+                      className="flex items-center gap-2.5"
+                    >
+                      <InputWrapper
+                        value={answer.answerText}
+                        type="text"
+                        className="max-w-xl"
+                        onChange={(e) =>
+                          addAnswerText(e, questionIndex, answerIndex)
+                        }
+                      />
+                      {editMode && answer.isCorrect === true && (
+                        <p className="text-green-500">This one is correct!</p>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -174,17 +199,31 @@ export const CreateProjectBody: FC<CreateProjectBodyProps> = ({
         ))}
 
         <div className="flex items-center justify-between">
-          <Button variant={"normalOutline"} onClick={handleAddQuestion}>
-            Add a new question
-          </Button>
-          <Button
-            variant={"normal"}
-            onClick={() => createProject(questionsToBeCreated)}
-            isLoading={isPending}
-            type="button"
-          >
-            Create project
-          </Button>
+          {!editMode && (
+            <Button variant={"normalOutline"} onClick={handleAddQuestion}>
+              Add a new question
+            </Button>
+          )}
+
+          {editMode ? (
+            <Button
+              variant={"normal"}
+              onClick={() => editProject(questionsToBeCreated)}
+              isLoading={isEditing}
+              type="button"
+            >
+              Edit project
+            </Button>
+          ) : (
+            <Button
+              variant={"normal"}
+              onClick={() => createProject(questionsToBeCreated)}
+              isLoading={isPending}
+              type="button"
+            >
+              Create project
+            </Button>
+          )}
         </div>
       </div>
     </div>

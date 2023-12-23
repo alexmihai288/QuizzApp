@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { FC } from "react";
 import { CreateProjectForms } from "./_components/CreateProjectForms";
 import Link from "next/link";
+import { db } from "@/lib/db";
 
 interface pageProps {
   searchParams: {
@@ -10,7 +11,22 @@ interface pageProps {
   };
 }
 
-const page: FC<pageProps> = ({ searchParams }) => {
+const page: FC<pageProps> = async ({ searchParams }) => {
+  let projectToBeEdited;
+  if (searchParams.edit === "true" && searchParams.projectId.trim() !== "")
+    projectToBeEdited = await db.project.findFirst({
+      where: {
+        id: searchParams.projectId,
+      },
+      include: {
+        questions: {
+          include: {
+            answers: true,
+          },
+        },
+      },
+    });
+
   return (
     <div className="min-h-screen bg-mainOrange pt-5 relative">
       <div className="container">
@@ -22,7 +38,9 @@ const page: FC<pageProps> = ({ searchParams }) => {
             Create your project
           </h1>
         </div>
-        <CreateProjectForms />
+
+        {/* loading */}
+        <CreateProjectForms projectToBeEdited={projectToBeEdited} />
       </div>
     </div>
   );

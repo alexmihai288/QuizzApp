@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { identificator } from "@/constants";
 import { useFinishQuizzModal } from "@/hooks/use-finish-quizz";
-import { ProjectwQuestionwAnswer } from "@/types";
+import {  ProjectwQuestionwAnswerWithUser } from "@/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { FinishModal } from "../../../components/modals/FinishModal";
@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 interface ProjectProps {
-  project: ProjectwQuestionwAnswer;
+  project: ProjectwQuestionwAnswerWithUser;
 }
 
 export const Project = ({ project }: ProjectProps) => {

@@ -3,12 +3,16 @@ import { FC } from "react";
 
 interface CreateProjectHeaderProps {
   setTitle: React.Dispatch<React.SetStateAction<string>>;
+  title: string
   setTopic: React.Dispatch<React.SetStateAction<string>>;
+  topic:string
 }
 
 export const CreateProjectHeader: FC<CreateProjectHeaderProps> = ({
   setTitle,
+  title,
   setTopic,
+  topic
 }) => {
   return (
     <div>
@@ -21,6 +25,7 @@ export const CreateProjectHeader: FC<CreateProjectHeaderProps> = ({
           <InputWrapper
             onChange={(e) => setTitle(e.target.value)}
             type="text"
+            value={title}
             placeholder="ex: Big Bang Theory"
             className="max-w-sm"
           />
@@ -30,6 +35,7 @@ export const CreateProjectHeader: FC<CreateProjectHeaderProps> = ({
           <InputWrapper
             onChange={(e) => setTopic(e.target.value)}
             type="text"
+            value={topic}
             placeholder="ex: Cosmic Inflation"
             className="max-w-sm"
           />

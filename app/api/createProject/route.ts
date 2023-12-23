@@ -20,10 +20,6 @@ export async function POST(req: NextRequest) {
       },
     }));
 
-    const chat = await db.chat.create({
-      data: {},
-    });
-
     await db.project.create({
       data: {
         userId: session.user.id,
@@ -32,7 +28,6 @@ export async function POST(req: NextRequest) {
         questions: {
           create: questions,
         },
-        chatId: chat.id,
       },
     });
 
